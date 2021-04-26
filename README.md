@@ -1,4 +1,4 @@
-# Swagger generated server
+# Swagger generated server for Protein Pattern Match RESTful API
 
 Spring Boot Server 
 
