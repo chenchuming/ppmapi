@@ -1,0 +1,292 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  static = false;
+  DEBUG_PARSER = false;
+  DEBUG_TOKEN_MANAGER = false;
+}
+
+PARSER_BEGIN(ExpressionParser)
+package org.proteininformationresource.ppm.pattern;
+import java.io.StringReader;
+import java.io.Reader;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Stack;
+import java.util.TreeSet;
+import org.proteininformationresource.ppm.pattern.PatternParser;
+
+public class ExpressionParser
+{
+  private static Stack stack = new java.util.Stack();
+
+  //private static ExpressionParser parser = null;
+  //  //private static Expression e;
+  public ExpressionParser(String s)
+  {
+    this ((Reader) (new StringReader(s)));
+  }
+
+  public static void main(String args [])
+  {
+    try
+    {
+      // String query = args [0];
+      //String query = "ASN_GLYCOSYLATION";
+      String query = "SAA";
+      //String query = "( [LIVMFYSTANQH] or [LIVM]-[ST]-A-[STAG]-H-C ) and [ST]-x(2)-[DE]";
+      //      if (parser == null)
+      //      {
+      //        parser = new ExpressionParser(query);
+      //      }
+      //      else
+      //      {
+      //        ReInit(new StringReader(query));
+      //      }
+      //parser.initState();
+      //parser.ReInit(new StringReader(s));
+      ExpressionParser parser = new ExpressionParser(new StringReader(query));
+      // parser.ReInit(new StringReader(query));
+      Expression e = parser.parseExpression();
+      System.out.println(e);
+      System.out.println(e.toSolrQuery());
+    }
+    catch (Exception ex)
+    {
+      System.out.println("NOK.");
+      System.out.println(ex.getMessage());
+    }
+    catch (Error er)
+    {
+      System.out.println("Oops.");
+      System.out.println(er.getMessage());
+    }
+  }
+
+  public Expression parseExpression() throws ParseException, TokenMgrError
+  {
+    stack.clear();
+    this.parse();
+    return (Expression) stack.pop();
+  }
+
+  private static ProSite PSLookup(String pattern)
+  {
+    ProSite prosite = null;
+    Resource resource = new ClassPathResource("/prosite.properties");
+    try
+    {
+      Properties props = PropertiesLoaderUtils.loadProperties(resource);
+      TreeSet < Object > keys = new TreeSet < Object > (props.keySet());
+      for (Object key : keys)
+      {
+        String keyStr = (String) key;
+        String [] keyPair = keyStr.split("\\|");
+        String psAC = keyPair [0];
+        String psID = keyPair [1];
+        if (psAC.equals(pattern))
+        {
+          prosite = new ProSite();
+          prosite.setPsAC(psAC);
+          prosite.setPsID(psID);
+          prosite.setPsPattern((String) props.get(key));
+          return prosite;
+        }
+        if (psID.equals(pattern))
+        {
+          prosite = new ProSite();
+          prosite.setPsAC(psAC);
+          prosite.setPsID(psID);
+          prosite.setPsPattern((String) props.get(key));
+          return prosite;
+        }
+      }
+    }
+    catch (IOException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return prosite;
+  }
+
+  private static Expression parseInputPattern(String inputExpression) throws ParseException
+  {
+    Expression e = new Expression();
+    PatternParserResult result = null;
+    ProSite prosite = PSLookup(inputExpression);
+    if (prosite != null)
+    {
+      e.setInput(inputExpression);
+      e.setPsAC(prosite.getPsAC());
+      e.setPsID(prosite.getPsID());
+      e.setPattern(prosite.getPsPattern());
+      result = PatternParser.parsePattern(prosite.getPsPattern());
+      if (result.getLog() != null)
+      {
+        throw new ParseException(result.getLog().getMessage());
+      }
+      e.setParsedPattern(result.getParsedPattern());
+    }
+    else
+    {
+       e.setInput(inputExpression);
+      e.setPattern(inputExpression);
+      result = PatternParser.parsePattern(inputExpression);
+      //      System.out.println(result);
+      if (result.getLog() != null)
+      {
+        throw new ParseException(result.getLog().getMessage());
+      }
+      e.setParsedPattern(result.getParsedPattern());
+    }
+    return e;
+  }
+}
+
+PARSER_END(ExpressionParser)
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+TOKEN : /*RESERVED TOKENS FOR ExpressionParser */
+{
+  < AND : "and" >
+| < OR : "or" >
+| < NOT : "not" >
+| < LPAREN : "(" >
+| < RPAREN : ")" >
+}
+
+TOKEN : /* the keywords and comparators - QUOTEDVALUE accounts for escaped quotes as well */
+{
+  < STRING : ([ "A"-"Z", "a"-"z", "0"-"9", "<", ">", "-", "_", "(", ")", "{", "}", ",", "[", "]" ])+ >
+| < QUOTED_STRING : "\"" (~[ "\"" ])+ "\"" >
+}
+
+/**
+ *  Top level
+ */
+void parse() throws ParseException :
+{
+}
+{
+  expression() < EOF >
+}
+
+void expression() :
+{
+}
+{
+  andExpression()
+  (
+    orExpression()
+  )*
+}
+
+void orExpression() :
+{
+}
+{
+  < OR > andExpression()
+  {
+    try
+    {
+      Expression re = (Expression) stack.pop();
+      Expression le = (Expression) stack.pop();
+      OrExpression oe = new OrExpression();
+      oe.setLeftExpression(le);
+      oe.setRightExpression(re);
+      //      oe.setLeftParenthesis("(");
+      //      oe.setRightParenthesis(")");
+      stack.push(oe);
+    }
+    catch (ClassCastException ex)
+    {
+      System.out.println("Non boolean operand supplied for <OR> operator");
+      throw new ParseException();
+    }
+  }
+}
+
+void andExpression() :
+{
+}
+{
+  primitiveExpression()
+  (
+    < AND > primitiveExpression()
+    {
+      try
+      {
+        Expression re = (Expression) stack.pop();
+        Expression le = (Expression) stack.pop();
+        AndExpression ae = new AndExpression();
+        //        ae.setLeftParenthesis("(");
+        //        ae.setRightParenthesis(")");
+        ae.setLeftExpression(le);
+        ae.setRightExpression(re);
+        stack.push(ae);
+      }
+      catch (ClassCastException ex)
+      {
+        System.out.println("Non boolean operand supplied for <AND> operator");
+        throw new ParseException();
+      }
+    }
+  )*
+}
+
+void primitiveExpression() :
+{
+  Expression e = null;
+}
+{
+  < NOT > primitiveExpression()
+  {
+    e = (Expression) stack.pop();
+    NotExpression ne = new NotExpression();
+    ne.setExpression(e);
+    stack.push(ne);
+  }
+| pattern()
+| 
+  < LPAREN > expression() < RPAREN >
+  {
+    e = (Expression) stack.pop();
+    e.setLeftParenthesis("(");
+    e.setRightParenthesis(")");
+    stack.push(e);
+  }
+}
+
+void pattern() :
+{
+  String inputExpression = null;
+  Token t = null;
+}
+{
+  t = < STRING >
+  {
+    inputExpression = t.image;
+    stack.push(parseInputPattern(inputExpression));
+  }
+| 
+  t = < QUOTED_STRING >
+  {
+    inputExpression = t.image;
+    stack.push(parseInputPattern(inputExpression));
+  }
+}
