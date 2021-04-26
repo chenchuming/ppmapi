@@ -3,7 +3,7 @@ package io.swagger.model;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.model.Document;
+import io.swagger.model.Protein;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -17,64 +17,64 @@ import javax.validation.constraints.*;
  */
 @Schema(description = "Response from SolrCloud search.")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2021-04-25T23:55:24.901Z[GMT]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2021-04-26T13:57:51.947Z[GMT]")
 
 
 public class SolrResponse   {
-  @JsonProperty("numFound")
-  private Integer numFound = null;
+  @JsonProperty("totalMatchedProteins")
+  private Integer totalMatchedProteins = null;
 
-  @JsonProperty("docs")
+  @JsonProperty("currentMatchedProteinList")
   @Valid
-  private List<Document> docs = null;
+  private List<Protein> currentMatchedProteinList = null;
 
   @JsonProperty("qtime")
   private BigDecimal qtime = null;
 
-  public SolrResponse numFound(Integer numFound) {
-    this.numFound = numFound;
+  public SolrResponse totalMatchedProteins(Integer totalMatchedProteins) {
+    this.totalMatchedProteins = totalMatchedProteins;
     return this;
   }
 
   /**
    * Number of matched SolrDocuments.
-   * @return numFound
+   * @return totalMatchedProteins
    **/
   @Schema(description = "Number of matched SolrDocuments.")
   
-    public Integer getNumFound() {
-    return numFound;
+    public Integer getTotalMatchedProteins() {
+    return totalMatchedProteins;
   }
 
-  public void setNumFound(Integer numFound) {
-    this.numFound = numFound;
+  public void setTotalMatchedProteins(Integer totalMatchedProteins) {
+    this.totalMatchedProteins = totalMatchedProteins;
   }
 
-  public SolrResponse docs(List<Document> docs) {
-    this.docs = docs;
+  public SolrResponse currentMatchedProteinList(List<Protein> currentMatchedProteinList) {
+    this.currentMatchedProteinList = currentMatchedProteinList;
     return this;
   }
 
-  public SolrResponse addDocsItem(Document docsItem) {
-    if (this.docs == null) {
-      this.docs = new ArrayList<Document>();
+  public SolrResponse addCurrentMatchedProteinListItem(Protein currentMatchedProteinListItem) {
+    if (this.currentMatchedProteinList == null) {
+      this.currentMatchedProteinList = new ArrayList<Protein>();
     }
-    this.docs.add(docsItem);
+    this.currentMatchedProteinList.add(currentMatchedProteinListItem);
     return this;
   }
 
   /**
-   * Get docs
-   * @return docs
+   * Get currentMatchedProteinList
+   * @return currentMatchedProteinList
    **/
   @Schema(description = "")
       @Valid
-    public List<Document> getDocs() {
-    return docs;
+    public List<Protein> getCurrentMatchedProteinList() {
+    return currentMatchedProteinList;
   }
 
-  public void setDocs(List<Document> docs) {
-    this.docs = docs;
+  public void setCurrentMatchedProteinList(List<Protein> currentMatchedProteinList) {
+    this.currentMatchedProteinList = currentMatchedProteinList;
   }
 
   public SolrResponse qtime(BigDecimal qtime) {
@@ -83,10 +83,10 @@ public class SolrResponse   {
   }
 
   /**
-   * SolrCloud query time.
+   * The number of milliseconds it took Solr to execute a search.
    * @return qtime
    **/
-  @Schema(description = "SolrCloud query time.")
+  @Schema(description = "The number of milliseconds it took Solr to execute a search.")
   
     @Valid
     public BigDecimal getQtime() {
@@ -107,14 +107,14 @@ public class SolrResponse   {
       return false;
     }
     SolrResponse solrResponse = (SolrResponse) o;
-    return Objects.equals(this.numFound, solrResponse.numFound) &&
-        Objects.equals(this.docs, solrResponse.docs) &&
+    return Objects.equals(this.totalMatchedProteins, solrResponse.totalMatchedProteins) &&
+        Objects.equals(this.currentMatchedProteinList, solrResponse.currentMatchedProteinList) &&
         Objects.equals(this.qtime, solrResponse.qtime);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(numFound, docs, qtime);
+    return Objects.hash(totalMatchedProteins, currentMatchedProteinList, qtime);
   }
 
   @Override
@@ -122,8 +122,8 @@ public class SolrResponse   {
     StringBuilder sb = new StringBuilder();
     sb.append("class SolrResponse {\n");
     
-    sb.append("    numFound: ").append(toIndentedString(numFound)).append("\n");
-    sb.append("    docs: ").append(toIndentedString(docs)).append("\n");
+    sb.append("    totalMatchedProteins: ").append(toIndentedString(totalMatchedProteins)).append("\n");
+    sb.append("    currentMatchedProteinList: ").append(toIndentedString(currentMatchedProteinList)).append("\n");
     sb.append("    qtime: ").append(toIndentedString(qtime)).append("\n");
     sb.append("}");
     return sb.toString();

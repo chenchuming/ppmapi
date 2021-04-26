@@ -18,7 +18,7 @@ public class MyExpressionParser {
 	
 	//static String inputExpression = "<M-K-S  and not  ( <M-R-R-G or <MR-G ) or ( <M-D-R-G or <M-R-F )";
 	//static String inputExpression = "not PS00004 and P-x(2)-G-E-S-G(2)-[AS]";
-	static String inputExpression = "PS00004 and [RK]-x-[ST]-T-D";
+	static String inputExpression = "PS00004 and RK(2)-x-[ST]-T-D";
 	static List<Message> messages = new ArrayList<Message>();
 	
 	public static void main(String[] args) {
@@ -26,7 +26,7 @@ public class MyExpressionParser {
 		//A combination of PROSITE accessions/identifiers e.g. PS50240 and PS50068, e.g. PS50240 and not ( PS00134 or PS00135 )
 		//A combination of PROSITE accessions/identifiers and your own pattern e.g. PS50240 and P-x(2)-G-E-S-G(2)-[AS]
 		
-		Expression result  = parseExpression(inputExpression);
+		Expression result  = parseExpression(inputExpression.replace("-", ""));
 		if(messages.size() == 0) {
 			System.out.println();
 			System.out.println();

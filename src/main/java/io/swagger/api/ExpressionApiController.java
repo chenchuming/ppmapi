@@ -93,7 +93,6 @@ public class ExpressionApiController implements ExpressionApi {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
             try {
-            	report.setInputParams(inputParams);
             	if(report.getMessage() != null) {
             		return new ResponseEntity<Report>(HttpStatus.INTERNAL_SERVER_ERROR);
             	}
@@ -114,7 +113,7 @@ public class ExpressionApiController implements ExpressionApi {
         
         if (accept != null && accept.contains("application/xml")) {
             try {
-            	report.setInputParams(inputParams);
+            	//System.out.println(report);
             	if(report.getMessage() != null) {
             		return new ResponseEntity<Report>(HttpStatus.INTERNAL_SERVER_ERROR);
             	}
@@ -128,7 +127,8 @@ public class ExpressionApiController implements ExpressionApi {
             	PrintWriter pw = new PrintWriter(sw);
             	e.printStackTrace(pw);
             	report.setMessage(pw.toString());
-                log.error("Couldn't serialize response for content type application/json", e);
+            	System.out.println(pw.toString());
+                log.error("Couldn't serialize response for content type application/xml", e);
                 return new ResponseEntity<Report>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }

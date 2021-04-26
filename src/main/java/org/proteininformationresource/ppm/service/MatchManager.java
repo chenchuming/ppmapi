@@ -37,10 +37,10 @@ import org.springframework.stereotype.Service;
 
 import io.swagger.model.Report;
 import io.swagger.model.SolrResponse;
-import io.swagger.model.Document;
 import io.swagger.model.DBStats;
 import io.swagger.model.OrganismStats;
 import io.swagger.model.OrganismStatsInner;
+import io.swagger.model.Protein;
 import io.swagger.model.TaxonGroupStats;
 import io.swagger.model.TaxonGroupStatsInner;
 import io.swagger.model.Highlights;
@@ -111,11 +111,11 @@ public class MatchManager {
 
 				// get query response
 				SolrResponse response = new SolrResponse();
-				response.setNumFound((int)queryResponse.getResults().getNumFound());
+				response.setTotalMatchedProteins((int)queryResponse.getResults().getNumFound());
 				
 				// response.setMaxScore(queryResponse.getResults().getMaxScore());
 				//response.setStart(queryResponse.getResults().getStart());
-				response.setDocs(getDocs(queryResponse.getResults()));
+				response.setCurrentMatchedProteinList(getMatchedProteins(queryResponse.getResults()));
 			
 				response.setQtime(BigDecimal.valueOf(respHeader.getqTime()));
 				searchResult.setResponse(response);
@@ -170,7 +170,7 @@ public class MatchManager {
 			String query = queryParam.getQuery();
 			System.out.println("input query: " + query);
 			result = new PatternParserResult();
-			ExpressionParser parser = new ExpressionParser(query);
+			ExpressionParser parser = new ExpressionParser(query.replaceAll("-", ""));
 			Expression e = parser.parseExpression();
 			System.out.println("solr query: " + e.toSolrQuery());
 			if (e.toSolrQuery().contains("/") || e.toSolrQuery().contains("?")) {
@@ -420,12 +420,12 @@ public class MatchManager {
 
 	
 
-	private List<Document> getDocs(SolrDocumentList results) {
-		List<Document> docs = new ArrayList<Document>();
+	private List<Protein> getMatchedProteins(SolrDocumentList results) {
+		List<Protein> docs = new ArrayList<Protein>();
 		for (SolrDocument doc : results) {
-			Document entry = new Document();
+			Protein entry = new Protein();
 			
-			entry.setId((String) doc.getFieldValue("id"));
+			entry.setProteinAC((String) doc.getFieldValue("id"));
 			entry.setProteinID((String) doc.getFieldValue("proteinID"));
 			entry.setProteinName((String) doc.getFieldValue("proteinName"));
 			entry.setOrganismName((String) doc.getFieldValue("organismName"));
