@@ -12,7 +12,9 @@ The underlying library integrating swagger to SpringBoot is [springdoc-openapi](
 
 Start your server as an simple java application  
 
+nohup java -jar target/swagger-spring-1.0.0.jar > run.log &
+
 You can view the api documentation in swagger-ui by pointing to  
-http://localhost:8080/  
+http://localhost:8080/ppmapi/v1/ 
 
 Change default port value in application.properties
