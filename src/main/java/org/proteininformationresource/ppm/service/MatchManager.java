@@ -121,7 +121,7 @@ public class MatchManager {
 				searchResult.setResponse(response);
 				
 				// get facet info
-				// System.out.println(queryResponse.getFacetFields());
+			//	 System.out.println(queryResponse.getFacetFields());
 				List<FacetField> facetFields = queryResponse.getFacetFields();
 				DBStats dbStats = getDBStats(facetFields);
 				TaxonGroupStats taxongroupStats = getTaxonGroupStats(facetFields);
@@ -148,6 +148,7 @@ public class MatchManager {
 			searchResult.setMessage(result.getLog().getMessage());
 		}
 
+		//System.out.println("get results");
 		return searchResult;
 	}
 
